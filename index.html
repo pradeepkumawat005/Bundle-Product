@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <Style>
+        .metafeild_product h2 , h1{
+  margin:0;
+  padding:0;
+  font-size: 16px;
+}
+label#checkbox {
+    display: flex;
+    gap: 28px;
+    width: 456px;
+    align-items: center;
+}
+
+    </Style>
+</head>
+<body>
+    <div class="metafeild_product">
+        {% assign bundle_products = product.metafields.custom.bundle_product.value %}
+        {% for product in bundle_products %}
+        {% if product %}
+        <label class="product" id="checkbox">
+            <input type="checkbox" id="checkbox" data="{{ product.variants.first.id }}">
+            <div class="product_image">
+                <img src="{{ product.featured_image | img_url: 'small' }}" alt="{{ product.title }}">
+            </div>
+            <div class="product_detials">
+                <h2>{{ product.title }}</h2>
+                <p>{{ product.price | money }}</p>
+            </div>
+        </label>
+        {% endif %}
+        {% endfor %}
+        <!-- <a href="https://62b0bd-32.myshopify.com/cart"> -->
+        <button class="add_to_cart">Addn To Card</button>
+        <!-- </a> -->
+    </div>
+    <script>
+        $(document).ready(function() {
+  $('.add_to_cart').click(function(e) {
+    e.preventDefault(); // Prevent default click behavior   
+    var data = {
+      items: []
+    };
+
+    $('.metafeild_product input[type="checkbox"]:checked').each(function() {
+      var productId = $(this).attr('data');
+      var quantity = 1; // Adjust as needed
+      
+      data.items.push({
+        id: productId,
+        quantity: quantity
+      });
+    });
+    console.log(data);
+    $.ajax({
+      url: '/cart/add.js',
+      type: 'POST',
+      data: data,
+      dataType: 'json',
+      success: function(response) {
+        console.log('Product(s) added to cart successfully:', response);
+      },
+      error: function(xhr, status, error) {
+        console.error('Error adding to cart:', error);
+      }
+    });
+  });
+});
+</script>
+</body>
+
+</html>
